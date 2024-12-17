@@ -1,2 +1,2 @@
-web: gunicorn app:"app"
-web: gunicorn run:"jobook_app"
+web: gunicorn app:app
+web: gunicorn run:book_app
