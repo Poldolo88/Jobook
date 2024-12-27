@@ -13,6 +13,14 @@ class Todo(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
+class Job_position(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_name = db.Column(db.String(30), nullable=True)
+    job_description = db.Column(db.String(30), nullable=True)
+    job_hourly_rate = db.Column(db.Integer, default=1)
+    def __repr__(self):
+        return '<Job %r>' % self.id
+
 
 @book_app.route('/', methods=['POST', 'GET'])
 def index():
@@ -29,7 +37,8 @@ def index():
 
     else:
         tasks = Todo.query.order_by(Todo.date_created).all()
-        return render_template('index.html', tasks=tasks)
+        jobs = Job_position.query.all()
+        return render_template('index.html', tasks=tasks, jobs=jobs)
 
 
 @book_app.route('/delete/<int:id>')
@@ -64,3 +73,6 @@ if __name__ == '__main__':
 
 # if __name__ == "__main__":
 #     app.run(debug=True)
+
+
+

@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
+<html>
 {% block head %}
+<head>
 <title>Task Master</title>
-{% endblock %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
 
+{% endblock %}
+<<body class="bg-success">
 {% block body %}
-<div class="content">
+<div class="container-sm">
     <h1 style="text-align: center">Task Master</h1>
     {% if tasks|length < 1 %}
     <h4 style="text-align: center">There are no tasks. Create one below!</h4>
     {% else %}
-    <table>
+    <table class="table table-striped">
         <tr>
             <th>Task</th>
             <th>Added</th>
@@ -36,5 +41,30 @@
             <input type="submit" value="Add Task">
         </form>
     </div>
+
+ <h1>Job Positions</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Job Name</th>
+                <th>Job Description</th>
+                <th>Hourly Rate</th>
+            </tr>
+        </thead>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.job_name }}</td>
+                <td>{{ job.job_description }}</td>
+                <td>{{ job.job_hourly_rate }}</td>
+            </tr>
+            {% endfor %}
+    </table>
 </div>
+ <!-- Script Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
 {% endblock %}
