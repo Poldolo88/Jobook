@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+<html lang="en">
+{% block head %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jobook Task Manager</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/jpeg">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+{% endblock %}
+{% block body %}
+<body style="background-color: #F0EAD6;">
+<div class="container mt-4">
+    <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+        <h1 style="color: black; background-color: #d3c0a1" ; class="text-center mb-4 mx-auto"> Task Master </h1>
+        <img src="{{ url_for('static', filename='Jobook Task Manager.png') }}" alt="Task Master Logo"
+             class="text-center mb-4" width="100" height="100">
+    </a>
+    {% if tasks|length < 1 %}
+    <h4 style="text-align: center">There are no tasks. Create one below!</h4>
+    {% else %}
+    <table class="table table-bordered" id="task-table" style="background-color: #9e8a80;color: black; font-weight: bold;">
+        <tr>
+            <th>Task</th>
+            <th><select name="category_filter" id="category-filter" onchange="filterTasks()">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select></th>
+            <th>Creation Date</th>
+            <th>Actions</th>
+        </tr>
+        {% for task, category in tasks %}
+        <tr>
+            <td>{{ task.content }}</td>
+            <td>{{ category.name }}</td>
+            <td>{{ task.date_created.date() }}</td>
+            <td>
+                <a href="/delete/{{task.id}}">Delete</a>
+                <br>
+                <a href="/update/{{task.id}}">Update</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="text" name="content" id="content">
+            <select name="category" id="category">
+                {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Add Task</button>
+            </select>
+
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+    </div>
+</div>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Job</h1>
+    {% if jobs|length < 1 %}
+    <h4 style="text-align: center">There are no job posts. Create one below!</h4>
+    {% else %}
+    <table class="table table-bordered "style="background-color: #9e8a80;color: black; font-weight: bold;">
+        <tr>
+            <th>Job Name</th>
+            <th>Job Description</th>
+            <th>Hourly Rate</th>
+        </tr>
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.job_name }}</td>
+            <td>{{ job.job_description }}</td>
+            <td>{{ job.job_hourly_rate }}</td>
+            <td>
+                <a href="">Delete</a>
+                <br>
+                <a href="">Update</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <!-- Your other html content -->
+
+    <h2>Order Book</h2>
+
+    <table class="table table-bordered "style="background-color: #9e8a80;color: black; font-weight: bold;">
+        <thead>
+        <tr>
+            <th style="text-align: right">Bid Quantity</th>
+            <th style="text-align: center">Price</th>
+            <th style="text-align: left">Ask Quantity</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in order_book %}
+        <tr>
+
+            <td>
+                <a href="{{ url_for('order') }}"><div class="bid-bar" style="text-align:right;width: {{ order.bid_quantity * 5 }}%; background-color: green">
+                    {{ order.bid_quantity }}
+                </div></a>
+            </td>
+            <td style="text-align: center">{{ order.price }}</td>
+            <td>
+                <a href="{{ url_for('order') }}"><div class="ask-bar" style="width: {{ order.ask_quantity * 5 }}%; background-color: red">
+                    {{ order.ask_quantity }}
+                </div></a>
+            </td>
+
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <style>
+        .bid-bar {
+            height: 30px; /* Adjust height as needed */
+            border-radius: 1px; /* Optional: Add rounded corners */
+            border: 2px solid #333;
+            display: flex; /* To center text within the bar */
+            align-items: center;
+            justify-content: center;
+            color: white; /* Set text color to white */
+            float: right; /* Align to the right */
+        }
+        .ask-bar {
+            height: 30px; /* Adjust height as needed */
+            border-radius: 1px; /* Optional: Add rounded corners */
+            border: 2px solid #333;
+            display: flex; /* To center text within the bar */
+            align-items: center;
+            justify-content: center;
+            color: white; /* Set text color to white */
+        }
+
+    </style>
+    </table>
+</div>
+</div>
+</div>
+
+<!-- Script Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function filterTasks() {
+        var selectedCategory = document.getElementById("category-filter").value;
+        var table = document.getElementById("task-table");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip header row
+            var categoryCell = rows[i].getElementsByTagName("td")[1]; // Category cell is the second td
+            var category = categoryCell.textContent || categoryCell.innerText;
+
+            if (selectedCategory === "" || category === selectedCategory) {
+                rows[i].style.display = "";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+</script>
+</body>
+</html>
+
+{% endblock %}
+
+
